@@ -2,6 +2,7 @@
 
 export function astar(grid,startNode,finishNode){
   const openSet=[];
+   const visitedNodesInOrder=[];
   startNode.g=0;
   startNode.h=manhattanDistance(startNode,finishNode);
   startNode.f=startNode.g+startNode.h;
@@ -19,9 +20,10 @@ export function astar(grid,startNode,finishNode){
         if (currentNode.isVisited) continue;
 
         currentNode.isVisited = true;
+        visitedNodesInOrder.push(currentNode); 
 
         if (currentNode === finishNode) {
-            return getNodesInShortestPathOrder(finishNode);
+             return visitedNodesInOrder;
         }
 
         const neighbors = getUnvisitedNeighbors(currentNode, grid);
@@ -43,6 +45,10 @@ export function astar(grid,startNode,finishNode){
         }
 
   }
+
+
+  // If no path found
+    return visitedNodesInOrder;
 };
 
 
