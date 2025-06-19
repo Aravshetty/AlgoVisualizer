@@ -3,16 +3,35 @@ import React, { useEffect, useState } from 'react';
 import Node from './Node/Node.jsx';
 import './PathVisualizer.css';
 import { dijkstra, getNodesInShortestPathOrder } from '../algorithms/dijkstra.js';
+import {astar} from '../algorithms/astar.js'
 
-const START_NODE_ROW = 0;
-const START_NODE_COL = 0;
-const FINISH_NODE_ROW = 19;
-const FINISH_NODE_COL = 49;
+const START_NODE_ROW = 10;
+const START_NODE_COL = 5;
+const FINISH_NODE_ROW = 10;
+const FINISH_NODE_COL = 35;
 
 function PathVisualizer() {
   const [grid, setGrid] = useState([]);
   const [mouseIsPressed, setMouseIsPressed] = useState(false);
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState('dijkstra');
 
+  const handleRunAlgorithm = () => {
+        if (selectedAlgorithm === 'dijkstra') {
+          const startNode = grid[START_NODE_ROW][START_NODE_COL];
+    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
+    const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
+    animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+            
+        } else if (selectedAlgorithm === 'astar') {
+            const startNode = grid[START_NODE_ROW][START_NODE_COL];
+    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const visitedNodesInOrder = astar(grid, startNode, finishNode);
+    const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
+    animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+            
+        }
+    };
   useEffect(() => {
     const initialGrid = getInitialGrid();
     setGrid(initialGrid);
@@ -69,8 +88,16 @@ function PathVisualizer() {
   };
 
   return (
-    <>
-      <button onClick={visualizeDijkstra}>Visualize Dijkstra's Algorithm</button>
+    <> 
+      <select
+                value={selectedAlgorithm}
+                onChange={(e) => setSelectedAlgorithm(e.target.value)}
+                style={{ padding: '8px', fontSize: '16px' , marginRight: '16px'}}
+            >
+                <option value="dijkstra">Dijkstra</option>
+                <option value="astar">A*</option>
+      </select>
+      <button onClick={handleRunAlgorithm}>Visualize {selectedAlgorithm}</button>
       <div className="grid">
         {grid.map((row, rowIdx) => (
           <div key={rowIdx}>
@@ -112,6 +139,9 @@ const createNode = (col, row) => {
     isVisited: false,
     isWall: false,
     previousNode: null,
+    g:Infinity,
+    h:0,
+    f:Infinity,
   };
 };
 
