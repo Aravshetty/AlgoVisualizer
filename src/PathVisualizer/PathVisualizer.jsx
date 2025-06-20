@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Node from './Node/Node.jsx';
 import './PathVisualizer.css';
 import { dijkstra, getNodesInShortestPathOrder } from '../algorithms/dijkstra.js';
-import {astar} from '../algorithms/astar.js'
+import { astar } from '../algorithms/astar.js';
 
 const START_NODE_ROW = 10;
 const START_NODE_COL = 5;
@@ -14,30 +14,46 @@ function PathVisualizer() {
   const [grid, setGrid] = useState([]);
   const [mouseIsPressed, setMouseIsPressed] = useState(false);
   const [selectedAlgorithm, setSelectedAlgorithm] = useState('dijkstra');
+  const [draggingNodeType, setDraggingNodeType] = useState(null);
+  const [startNode, setStartNode] = useState(null);
+  const [finishNode, setFinishNode] = useState(null);
 
-  const handleRunAlgorithm = () => {
-        if (selectedAlgorithm === 'dijkstra') {
-          const startNode = grid[START_NODE_ROW][START_NODE_COL];
-    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
-    const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
-    animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
-            
-        } else if (selectedAlgorithm === 'astar') {
-            const startNode = grid[START_NODE_ROW][START_NODE_COL];
-    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    const visitedNodesInOrder = astar(grid, startNode, finishNode);
-    const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
-    animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
-            
-        }
-    };
   useEffect(() => {
     const initialGrid = getInitialGrid();
     setGrid(initialGrid);
+    setStartNode(initialGrid[START_NODE_ROW][START_NODE_COL]);
+    setFinishNode(initialGrid[FINISH_NODE_ROW][FINISH_NODE_COL]);
   }, []);
 
+  const handleRunAlgorithm = () => {
+    if (!startNode || !finishNode) return;
+
+    if (selectedAlgorithm === 'dijkstra') {
+      const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
+      const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
+      animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+    } else if (selectedAlgorithm === 'astar') {
+      const visitedNodesInOrder = astar(grid, startNode, finishNode);
+      const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
+      animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+    }
+  };
+
   const handleMouseDown = (row, col) => {
+    const node = grid[row][col];
+
+    if (node.isStart) {
+      setDraggingNodeType('start');
+      setMouseIsPressed(true);
+      return;
+    }
+
+    if (node.isFinish) {
+      setDraggingNodeType('finish');
+      setMouseIsPressed(true);
+      return;
+    }
+
     const newGrid = getNewGridWithWallToggled(grid, row, col);
     setGrid(newGrid);
     setMouseIsPressed(true);
@@ -45,12 +61,40 @@ function PathVisualizer() {
 
   const handleMouseEnter = (row, col) => {
     if (!mouseIsPressed) return;
-    const newGrid = getNewGridWithWallToggled(grid, row, col);
-    setGrid(newGrid);
+
+    const newGrid = grid.slice();
+
+    if (draggingNodeType === 'start') {
+      const prevStart = startNode;
+      newGrid[prevStart.row][prevStart.col] = { ...prevStart, isStart: false };
+
+      const newStartNode = { ...grid[row][col], isStart: true, isWall: false };
+      newGrid[row][col] = newStartNode;
+
+      setStartNode(newStartNode);
+      setGrid(newGrid);
+      return;
+    }
+
+    if (draggingNodeType === 'finish') {
+      const prevFinish = finishNode;
+      newGrid[prevFinish.row][prevFinish.col] = { ...prevFinish, isFinish: false };
+
+      const newFinishNode = { ...grid[row][col], isFinish: true, isWall: false };
+      newGrid[row][col] = newFinishNode;
+
+      setFinishNode(newFinishNode);
+      setGrid(newGrid);
+      return;
+    }
+
+    const newGridWithWall = getNewGridWithWallToggled(grid, row, col);
+    setGrid(newGridWithWall);
   };
 
   const handleMouseUp = () => {
     setMouseIsPressed(false);
+    setDraggingNodeType(null);
   };
 
   const animateDijkstra = (visitedNodesInOrder, nodesInShortestPathOrder) => {
@@ -79,31 +123,27 @@ function PathVisualizer() {
     }
   };
 
-  const visualizeDijkstra = () => {
-    const startNode = grid[START_NODE_ROW][START_NODE_COL];
-    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
-    const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
-    animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
-  };
-  const handleClear=()=>{
-     const initialGrid = getInitialGrid();
+  const handleClear = () => {
+    const initialGrid = getInitialGrid();
     setGrid(initialGrid);
+    setStartNode(initialGrid[START_NODE_ROW][START_NODE_COL]);
+    setFinishNode(initialGrid[FINISH_NODE_ROW][FINISH_NODE_COL]);
+  };
 
-  }
   return (
-    <> 
+    <>
       <select
-                value={selectedAlgorithm}
-                onChange={(e) => setSelectedAlgorithm(e.target.value)}
-                style={{ padding: '8px', fontSize: '16px' , marginRight: '16px'}}
-            >
-                <option value="dijkstra">Dijkstra</option>
-                <option value="astar">A*</option>
+        value={selectedAlgorithm}
+        onChange={(e) => setSelectedAlgorithm(e.target.value)}
+        style={{ padding: '8px', fontSize: '16px', marginRight: '16px' }}
+      >
+        <option value="dijkstra">Dijkstra</option>
+        <option value="astar">A*</option>
       </select>
-      <button onClick={handleRunAlgorithm} style={{marginRight:'16px'}}>Visualize {selectedAlgorithm}</button>
+      <button onClick={handleRunAlgorithm} style={{ marginRight: '16px' }}>
+        Visualize {selectedAlgorithm}
+      </button>
       <button onClick={handleClear}>Clear Grid</button>
-
 
       <div className="grid">
         {grid.map((row, rowIdx) => (
@@ -134,8 +174,7 @@ function PathVisualizer() {
 
 export default PathVisualizer;
 
-// 🛠️ Utility Functions
-
+// Utility Functions
 const createNode = (col, row) => {
   return {
     col,
@@ -146,9 +185,9 @@ const createNode = (col, row) => {
     isVisited: false,
     isWall: false,
     previousNode: null,
-    g:Infinity,
-    h:0,
-    f:Infinity,
+    g: Infinity,
+    h: 0,
+    f: Infinity,
   };
 };
 
@@ -157,7 +196,7 @@ const getInitialGrid = () => {
   for (let row = 0; row < 20; row++) {
     const currentRow = [];
     for (let col = 0; col < 50; col++) {
-      currentRow.push(createNode(col, row)); 
+      currentRow.push(createNode(col, row));
     }
     grid.push(currentRow);
   }
