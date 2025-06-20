@@ -86,7 +86,11 @@ function PathVisualizer() {
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
     animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
   };
+  const handleClear=()=>{
+     const initialGrid = getInitialGrid();
+    setGrid(initialGrid);
 
+  }
   return (
     <> 
       <select
@@ -97,7 +101,10 @@ function PathVisualizer() {
                 <option value="dijkstra">Dijkstra</option>
                 <option value="astar">A*</option>
       </select>
-      <button onClick={handleRunAlgorithm}>Visualize {selectedAlgorithm}</button>
+      <button onClick={handleRunAlgorithm} style={{marginRight:'16px'}}>Visualize {selectedAlgorithm}</button>
+      <button onClick={handleClear}>Clear Grid</button>
+
+
       <div className="grid">
         {grid.map((row, rowIdx) => (
           <div key={rowIdx}>
