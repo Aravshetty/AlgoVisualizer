@@ -4,7 +4,7 @@ import Node from './Node/Node.jsx';
 import './PathVisualizer.css';
 import { dijkstra, getNodesInShortestPathOrder } from '../algorithms/dijkstra.js';
 import { astar } from '../algorithms/astar.js';
-
+import { generateMazeRecursiveDivision } from '../mazealgoritm/recursivedivison.js';
 const START_NODE_ROW = 10;
 const START_NODE_COL = 5;
 const FINISH_NODE_ROW = 10;
@@ -143,6 +143,16 @@ function PathVisualizer() {
       <button onClick={handleRunAlgorithm} style={{ marginRight: '16px' }}>
         Visualize {selectedAlgorithm}
       </button>
+      <button
+  onClick={() =>
+    generateMazeRecursiveDivision(grid, setGrid, 10, startNode, finishNode)
+  }
+  style={{ marginRight: '16px' }}
+>
+  Generate Maze
+</button>
+
+
       <button onClick={handleClear}>Clear Grid</button>
 
       <div className="grid">
