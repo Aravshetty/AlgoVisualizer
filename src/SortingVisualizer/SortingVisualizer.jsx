@@ -3,6 +3,7 @@ import './SortingVisualizer.css';
 import getMergeSort from '../algorithms/mergesort.js';
 import getBubbleSort from '../algorithms/bubblesort.js';
 import quicksort from '../algorithms/quicksort.js';
+import heapsort from '../algorithms/heapsort.js';
 
 function SortingVisualizer() {
   const [array, setArray] = useState([]);
@@ -27,7 +28,7 @@ function SortingVisualizer() {
           setTimeout(() => {
             firstIndStyle.backgroundColor = 'red';
             secondIndStyle.backgroundColor = 'red';
-          }, i * 1);
+          }, i * 5);
         }
         if (i % 3 === 1) {
           const [firstInd, secondInd] = animations[i];
@@ -36,14 +37,14 @@ function SortingVisualizer() {
           setTimeout(() => {
             firstIndStyle.backgroundColor = 'turquoise';
             secondIndStyle.backgroundColor = 'turquoise';
-          }, i * 1);
+          }, i * 5);
         }
         if (i % 3 === 2) {
           setTimeout(() => {
             const [barOneIdx, newHeight] = animations[i];
             const barOneStyle = arrayBars[barOneIdx].style;
             barOneStyle.height = `${newHeight}px`;
-          }, i * 1);
+          }, i * 5);
         }
       }
     }
@@ -59,7 +60,7 @@ function SortingVisualizer() {
           setTimeout(() => {
             firstIndStyle.backgroundColor = 'red';
             secondIndStyle.backgroundColor = 'red';
-          }, i * 1);
+          }, i * 3);
         }
         if (i % 4 === 1) {
           const [firstInd, secondInd] = animations[i];
@@ -68,19 +69,18 @@ function SortingVisualizer() {
           setTimeout(() => {
             firstIndStyle.backgroundColor = 'turquoise';
             secondIndStyle.backgroundColor = 'turquoise';
-          }, i * 1);
+          }, i * 3);
         }
         if (i % 4 === 2 || i % 4 === 3) {
           setTimeout(() => {
             const [barOneIdx, newHeight] = animations[i];
             const barOneStyle = arrayBars[barOneIdx].style;
             barOneStyle.height = `${newHeight}px`;
-          }, i * 1);
+          }, i * 3);
         }
       }
     }
-
-    if (selectedAlgorithm === 'quickSort') {
+     if (selectedAlgorithm === 'quickSort') {
       const animations = quicksort(array.slice());
       const arrayBars = document.getElementsByClassName('array-bar');
 
@@ -165,16 +165,104 @@ function SortingVisualizer() {
             }
           }, speed * (animations.length));
     }
+
+    if (selectedAlgorithm === 'heapSort') {
+  const animations = heapsort(array.slice());
+  const arrayBars = document.getElementsByClassName('array-bar');
+
+  let speed = 5;
+  let sortedElements = new Set();
+  let totalElements = array.length;
+
+  for (let i = 0; i < animations.length; i++) {
+    const [action, ...rest] = animations[i];
+
+    
+
+    if (action === 'swap') {
+      const [barOneIdx, barTwoIdx, barOneHeight, barTwoHeight] = rest;
+
+      setTimeout(() => {
+        arrayBars[barOneIdx].style.height = `${barTwoHeight}px`;
+        arrayBars[barTwoIdx].style.height = `${barOneHeight}px`;
+
+        arrayBars[barOneIdx].style.backgroundColor = 'turquoise';
+        arrayBars[barTwoIdx].style.backgroundColor = 'turquoise';
+      }, speed * i);
+    }
+
+    else if (action === 'sorted') {
+      const [sortedIdx] = rest;
+
+      setTimeout(() => {
+        arrayBars[sortedIdx].style.backgroundColor = '#a64ca6';
+        sortedElements.add(sortedIdx);
+      }, speed * i);
+    }
+
+    if (action === 'sorted' && sortedElements.size === totalElements) {
+      setTimeout(() => {
+        for (let k = 0; k < arrayBars.length; k++) {
+          arrayBars[k].style.backgroundColor = 'turquoise';
+        }
+      }, speed * (i + 1));
+    }
+  }
+
+  setTimeout(() => {
+    for (let k = 0; k < arrayBars.length; k++) {
+      arrayBars[k].style.backgroundColor = 'turquoise';
+    }
+  }, speed * (animations.length));
+}
+
+
   };
 
-  const handleGenrateArray = () => {
+  const handleGenerateArray = () => {
     const initialArray = getInitialArray();
     setArray(initialArray);
   };
 
   return (
-    <>
-      <div className='array-container' style={{ display: 'flex', alignItems: 'flex-end' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#f8fafc' }}>
+      {/* Top Section */}
+      <div style={{ padding: '10px 20px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1e293b', margin: 0 }}>
+            Sorting Visualizer
+          </h1>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <button style={{ padding: '8px 16px', fontSize: '14px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }} onClick={handleGenerateArray}>
+            Generate New Array
+          </button>
+
+          <button style={{ padding: '8px 16px', fontSize: '14px', backgroundColor: selectedAlgorithm === 'mergeSort' ? '#10b981' : '#e5e7eb', color: selectedAlgorithm === 'mergeSort' ? 'white' : '#374151', border: 'none', borderRadius: '8px', cursor: 'pointer' }} onClick={() => setSelectedAlgorithm('mergeSort')}>
+            MergeSort
+          </button>
+
+          <button style={{ padding: '8px 16px', fontSize: '14px', backgroundColor: selectedAlgorithm === 'quickSort' ? '#10b981' : '#e5e7eb', color: selectedAlgorithm === 'quickSort' ? 'white' : '#374151', border: 'none', borderRadius: '8px', cursor: 'pointer' }} onClick={() => setSelectedAlgorithm('quickSort')}>
+            QuickSort
+          </button>
+
+          <button style={{ padding: '8px 16px', fontSize: '14px', backgroundColor: selectedAlgorithm === 'bubbleSort' ? '#10b981' : '#e5e7eb', color: selectedAlgorithm === 'bubbleSort' ? 'white' : '#374151', border: 'none', borderRadius: '8px', cursor: 'pointer' }} onClick={() => setSelectedAlgorithm('bubbleSort')}>
+            BubbleSort
+          </button>
+
+          <button style={{ padding: '8px 16px', fontSize: '14px', backgroundColor: selectedAlgorithm === 'heapSort' ? '#10b981' : '#e5e7eb', color: selectedAlgorithm === 'heapSort' ? 'white' : '#374151', border: 'none', borderRadius: '8px', cursor: 'pointer' }} onClick={() => setSelectedAlgorithm('heapSort')}>
+            HeapSort
+          </button>
+
+          <button style={{ padding: '8px 16px', fontSize: '14px', backgroundColor: selectedAlgorithm ? '#ef4444' : '#9ca3af', color: 'white', border: 'none', borderRadius: '8px', cursor: selectedAlgorithm ? 'pointer' : 'not-allowed', opacity: selectedAlgorithm ? 1 : 0.6 }} onClick={handleRunAlgorithm} disabled={!selectedAlgorithm}>
+            RUN
+          </button>
+        </div>
+      </div>
+
+      {/* Bottom Section - Array Bars */}
+      <div className="array-container" style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '10px' }}>
         {array.map((value, idx) => (
           <div
             className="array-bar"
@@ -193,38 +281,7 @@ function SortingVisualizer() {
           />
         ))}
       </div>
-
-      <div style={{
-        backgroundColor: '#f0f4f8',
-        padding: '12px 16px',
-        borderRadius: '6px',
-        display: 'flex',
-        alignItems: 'center',
-        maxWidth: '400px',
-        gap: '20px'
-      }}>
-        <button style={{ padding: '8px 14px', fontSize: '14px' }} onClick={handleGenrateArray}>
-          Generate New Array
-        </button>
-
-        <select
-          value={selectedAlgorithm}
-          onChange={(e) => setSelectedAlgorithm(e.target.value)}
-          style={{ padding: '8px 14px', fontSize: '14px' }}
-        >
-          <option value="mergeSort">MergeSort</option>
-          <option value="quickSort">QuickSort</option>
-          <option value="bubbleSort">BubbleSort</option>
-          <option value="insertionSort">InsertionSort</option>
-          <option value="heapSort">HeapSort</option>
-          <option value="selectionSort">SelectionSort</option>
-        </select>
-
-        <button style={{ padding: '8px 16px', fontSize: '14px' }} onClick={handleRunAlgorithm}>
-          RUN
-        </button>
-      </div>
-    </>
+    </div>
   );
 }
 
@@ -236,7 +293,7 @@ function getRandomNumber(min, max) {
 
 function getInitialArray() {
   const a = [];
-  for (let i = 1; i <= 100; i++) {
+  for (let i = 1; i <= 200; i++) {
     a.push(getRandomNumber(5, 300));
   }
   return a;
