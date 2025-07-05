@@ -1,12 +1,43 @@
-# React + Vite
+# Algorithm Visualizer - Pathfinding & Sorting Visualizer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive React.js based visualizer to demonstrate pathfinding and sorting algorithms with real-time animations and step-by-step execution.
 
-Currently, two official plugins are available:
+## 🚀 Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Deployed here:** https://algo-visualizer-azure.vercel.app
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Pathfinding Algorithms
+- **Dijkstra's Algorithm** - Find shortest path with weighted edges
+- **A* Algorithm** - Heuristic-based pathfinding for optimal routes
+- **Breadth-First Search (BFS)** - Explore nodes level by level
+- **Depth-First Search (DFS)** - Explore as far as possible along each branch
+- **Custom wall placement** - Create obstacles to test pathfinding logic
+- **Random maze generation** - Generate complex mazes automatically
+
+### Sorting Algorithms
+- **Merge Sort** - Divide and conquer sorting with O(n log n) complexity
+- **Quick Sort** - Efficient in-place sorting algorithm
+- **Bubble Sort** - Simple comparison-based sorting
+- **Heap Sort** - Tree-based sorting algorithm
+- **Real-time array animations** - Watch sorting happen step by step
+
+### Interactive Features
+- Step-by-step execution control
+- Animation speed adjustment
+- Visual grid traversal
+- Real-time algorithm comparison
+
+## Tech Stack
+
+- **Frontend:** React.js
+- **Styling:** HTML, CSS
+- **Deployment:** Vercel
+
+## How It Works
+
+1. **Select Algorithm** - Choose from pathfinding or sorting algorithms
+2. **Set Parameters** - Place start/end points, create walls, or input array
+3. **Visualize** - Watch the algorithm execute with smooth animations
+4. **Compare** - Test different algorithms on the same data set
